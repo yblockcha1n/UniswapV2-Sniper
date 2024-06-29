@@ -6,14 +6,14 @@ https://www.youtube.com/watch?v=NU0HtzAC6-o
 
 ```mermaid
 graph TD
-    A[Start] --> B[監視: getReserves関数の呼び出し]
-    B --> C{流動性検出?}
-    C -->|Yes| D[swapExactETHForTokens関数を呼び出して購入]
+    A[Start] --> B[Monitoring: Call getReserves]
+    B --> C{Liquidity Detection?}
+    C -->|Yes| D[Call swapExactETHForTokens]
     C -->|No| B
-    D --> E[Approve実行]
-    E --> F[getAmountOuts関数でトークン算出シミュレーション]
-    F --> G{指定倍数に到達?}
+    D --> E[Call Approve]
+    E --> F[Call getAmountOuts]
+    F --> G{Reached Price?}
     G -->|No| F
-    G -->|Yes| H[swapExactTokensForETH関数を呼び出して売却]
+    G -->|Yes| H[Call swapExactTokensForETH]
     H --> I[End]
 ```
