@@ -31,7 +31,7 @@ async def get_token_price():
     token_price_eth = w3.from_wei(token_price_wei[1], 'ether')
     return token_price_eth
 
-async def swap_tokens():
+async def buy():
     swap_tx = router_contract.functions.swapExactETHForTokens(
         min_tokens,
         [w3.to_checksum_address(config['WETH_ADDRESS']), config['TOKEN_ADDRESS']],
@@ -52,7 +52,7 @@ async def swap_tokens():
     print(f"Buy Transaction Hash: {swap_tx_hash.hex()}")
     return swap_tx_receipt
 
-async def approve_tokens(bought_tokens):
+async def approve(bought_tokens):
     approve_tx = token_contract.functions.approve(config['ROUTER_ADDRESS'], bought_tokens).build_transaction({
         'from': account_address,
         'gas': 100000,
@@ -66,7 +66,7 @@ async def approve_tokens(bought_tokens):
     print(f"Approve Transaction Hash: {approve_tx_hash.hex()}")
     return approve_tx_receipt
 
-async def sell_tokens(bought_tokens):
+async def sell(bought_tokens):
     deadline = w3.eth.get_block('latest').timestamp + 120
 
     sell_path = [config['TOKEN_ADDRESS'], w3.to_checksum_address(config['WETH_ADDRESS'])]
@@ -101,9 +101,9 @@ async def main():
             initial_token_price_eth = await get_token_price()
             print(f"Initial Token Price: {initial_token_price_eth} Token")
 
-            swap_tx_receipt = await swap_tokens()
+            swap_tx_receipt = await buy()
             bought_tokens = token_contract.functions.balanceOf(account_address).call()
-            approve_tx_receipt = await approve_tokens(bought_tokens)
+            approve_tx_receipt = await approve(bought_tokens)
 
             async with ClientSession() as session:
                 while True:
@@ -111,7 +111,7 @@ async def main():
                     print(f"Current Token Price: {current_token_price_eth} Token")
 
                     if current_token_price_eth <= initial_token_price_eth / 2:
-                        await sell_tokens(bought_tokens)
+                        await sell(bought_tokens)
                         print("Selling completed. Exiting...")
                         return
 
