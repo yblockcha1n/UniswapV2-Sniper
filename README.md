@@ -7,7 +7,7 @@ https://www.youtube.com/watch?v=NU0HtzAC6-o
 ```mermaid
 graph TD
     A[Start] --> B[監視: getReserves関数の呼び出し]
-    B --> C{関数呼び出し検出?}
+    B --> C{流動性検出?}
     C -->|Yes| D[swapExactETHForTokens関数を呼び出して購入]
     C -->|No| B
     D --> E[Approve実行]
